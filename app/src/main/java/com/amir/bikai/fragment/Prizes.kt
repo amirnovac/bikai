@@ -15,7 +15,6 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,20 +28,18 @@ import com.amir.bikai.model.PrizeModel
 import com.amir.bikai.viewModel.PrizesViewModel
 import kotlinx.android.synthetic.main.fragment_prizes.*
 import java.io.Serializable
-import java.time.Year
-import java.util.ArrayList
+import java.util.*
 
 
-class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
+class Prizes : BaseFragment(), OnItemCLick, ApiListener, View.OnClickListener {
 
 
-
-    private lateinit var prizesAdapter :PrizesAdapter
-    private var prizes= ArrayList<PrizeModel.Prize>()
+    private lateinit var prizesAdapter: PrizesAdapter
+    private var prizes = ArrayList<PrizeModel.Prize>()
     private var prizesCopy = ArrayList<PrizeModel.Prize>()
-    private var ctg= ArrayList<String>()
+    private var ctg = ArrayList<String>()
 
-    private lateinit var prizesViewModel:PrizesViewModel
+    private lateinit var prizesViewModel: PrizesViewModel
     private var filter = false
 
     override fun onCreateView(
@@ -56,28 +53,29 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       // loader = loaderView.rootView as ConstraintLayout?
+        // loader = loaderView.rootView as ConstraintLayout?
 
         implementListener()
         setEmptyAdapter()
         getData()
     }
 
-    fun implementListener(){
+    fun implementListener() {
         imgFilter.setOnClickListener(this)
     }
-    fun setEmptyAdapter(){
+
+    fun setEmptyAdapter() {
         layoutManager = LinearLayoutManager(mContext)
         rv.layoutManager = layoutManager
 
-        prizesAdapter = PrizesAdapter(this,prizes)
+        prizesAdapter = PrizesAdapter(this, prizes)
         rv.adapter = prizesAdapter
     }
 
-    fun getData(){
+    fun getData() {
         showingLoader()
         prizesViewModel = ViewModelProvider(this).get(PrizesViewModel::class.java)
-       // prizesViewModel.getListener(this)
+        // prizesViewModel.getListener(this)
 
         prizesViewModel.getPrizes().observe(this,
             Observer<List<PrizeModel.Prize>> { results ->
@@ -88,7 +86,6 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
                     prizes[i].category?.let { ctg.add(it) }
                 }
 
-
                 prizesAdapter?.notifyDataSetChanged()
                 hidingLoader()
             })
@@ -97,32 +94,33 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
 
     override fun onItemClick(position: Int, type: Int) {
         val intent = Intent(mContext, PrizeWinners::class.java)
-        intent.putExtra("winners",prizes.get(position) as Serializable)
+        intent.putExtra("winners", prizes.get(position) as Serializable)
         startActivity(intent)
 
     }
 
     override fun onStarting() {
-      //  showLoader()
+        //  showLoader()
     }
 
     override fun onSucces() {
-     //   hideLoader()
+        //   hideLoader()
     }
 
     override fun onFailure(message: String) {
-       // hideLoader()
+        // hideLoader()
         showToast(message)
     }
 
     override fun onClick(v: View?) {
-        if (v== imgFilter){
-            if (!filter){
+        if (v == imgFilter) {
+            if (!filter) {
                 filter = true
                 dialogSelectImage()
             }
         }
     }
+
     fun dialogSelectImage() {
         val dialog = Dialog(mContext)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -136,14 +134,14 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
         val btnApply: Button
         val tvCancel: TextView
         val spnCategory: Spinner
-        val spnYear : Spinner
+        val spnYear: Spinner
 
         btnApply = dialog.findViewById(R.id.btnApply)
         tvCancel = dialog.findViewById(R.id.tvBack)
         spnCategory = dialog.findViewById(R.id.spnCategory)
         spnYear = dialog.findViewById(R.id.spnYear)
 
-         val years = ArrayList<String>()
+        val years = ArrayList<String>()
 
         for (i in 1900..2018) {
             years.add(i.toString())
@@ -172,7 +170,7 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
 
         }
         btnApply.setOnClickListener {
-            setFilter(spnYear.selectedItem.toString(),spnCategory.selectedItem.toString())
+            setFilter(spnYear.selectedItem.toString(), spnCategory.selectedItem.toString())
             dialog.dismiss()
             filter = false
         }
@@ -188,18 +186,20 @@ class Prizes : BaseFragment(),OnItemCLick,ApiListener,View.OnClickListener {
     fun setFilter(year: String, category: String) {
         prizes.clear()
         for (i in 0 until prizesCopy.size) {
-            if(prizesCopy[i].category.equals(category) && prizesCopy[i].year.equals(year)){
-               prizes.add(prizesCopy[i])
+            if (prizesCopy[i].category.equals(category) && prizesCopy[i].year.equals(year)) {
+                prizes.add(prizesCopy[i])
             }
         }
         prizesAdapter.notifyDataSetChanged()
     }
 
-    fun showingLoader(){
+    fun showingLoader() {
         progressLoader.visibility = View.VISIBLE
     }
 
-    fun hidingLoader(){
-       progressLoader.visibility = View.GONE
+    fun hidingLoader() {
+        progressLoader.visibility = View.GONE
     }
+    
 }
+
