@@ -200,6 +200,6 @@ class Prizes : BaseFragment(), OnItemCLick, ApiListener, View.OnClickListener {
     fun hidingLoader() {
         progressLoader.visibility = View.GONE
     }
-    
+
 }
 
